@@ -7,7 +7,9 @@ import com.swe212.onlineshop.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -39,22 +41,24 @@ public class ProductController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addProduct(@RequestBody AddProductRequest addProductRequest) {
-        String message = productService.addProduct(addProductRequest);
-        return ResponseEntity
-                .ok(message);
+    public ResponseEntity<String> addProduct(
+            @RequestPart("addProductRequest") AddProductRequest addProductRequest,
+            @RequestPart("file") MultipartFile file) {
+
+        String message = productService.addProduct(addProductRequest, file);
+
+        return ResponseEntity.ok(message);
     }
 
-    @PutMapping("/updateById/{id}")
+    @PutMapping(value = "/updateById/{id}", consumes = "multipart/form-data")
     public ResponseEntity<String> updateProductById(
-            @PathVariable(value = "id") Long ProductId,
-            @RequestBody UpdateProductRequest updateProductRequest
+            @PathVariable(value = "id") Long productId,
+            @RequestPart("updateProductRequest") UpdateProductRequest updateProductRequest,
+            @RequestPart(value = "file", required = false) MultipartFile file
     ) {
-        String message = productService.updateProductById(
-                ProductId,
-                updateProductRequest
-        );
-        return ResponseEntity
-                .ok(message);
+
+        String message = productService.updateProductById(productId, updateProductRequest, file);
+
+        return ResponseEntity.ok(message);
     }
 }

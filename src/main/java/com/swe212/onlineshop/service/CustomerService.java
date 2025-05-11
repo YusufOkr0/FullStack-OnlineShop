@@ -10,7 +10,13 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 
@@ -45,36 +51,66 @@ public class CustomerService {
         return String.format("User with the id %s has been deleted successfully.",id);
     }
 
-    public String updateCustomerById(Long id, UpdateCustomerRequest updateCustomerRequest) {
-        Customer customerToUpdate = customerRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadı: " + id));
+    public String updateCustomerById(Long customerId, UpdateCustomerRequest updateCustomerRequest, MultipartFile file) {
 
-        if (!customerToUpdate.getUsername().equals(updateCustomerRequest.getUsername()) &&
+        Customer customerToUpdate = customerRepository.findById(customerId)
+                .orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadı: " + customerId));
+
+
+        if (updateCustomerRequest.getUsername() != null &&
+                !customerToUpdate.getUsername().equals(updateCustomerRequest.getUsername()) &&
                 customerRepository.existsByUsername(updateCustomerRequest.getUsername())) {
             throw new TakenUsernameException("Bu kullanıcı adı zaten kullanımda: " + updateCustomerRequest.getUsername());
         }
 
-        customerToUpdate.setUsername(updateCustomerRequest.getUsername());
-        customerToUpdate.setPassword(updateCustomerRequest.getPassword());
-        customerToUpdate.setPhone(updateCustomerRequest.getPhone());
-        customerToUpdate.setAddress(updateCustomerRequest.getAddress());
 
-        if (updateCustomerRequest.getImageUrl() != null) {
-            customerToUpdate.setImageUrl(updateCustomerRequest.getImageUrl());
-        }
+        if (updateCustomerRequest.getUsername() != null)
+            customerToUpdate.setUsername(updateCustomerRequest.getUsername());
+        if (updateCustomerRequest.getPhone() != null)
+            customerToUpdate.setPhone(updateCustomerRequest.getPhone());
+        if (updateCustomerRequest.getAddress() != null)
+            customerToUpdate.setAddress(updateCustomerRequest.getAddress());
 
-        if (updateCustomerRequest.getRole() != null) {
+
+        if (updateCustomerRequest.getRole() != null && !updateCustomerRequest.getRole().trim().isEmpty()) {
             try {
                 customerToUpdate.setRole(Role.valueOf(updateCustomerRequest.getRole().toUpperCase()));
             } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Geçersiz rol: " + updateCustomerRequest.getRole());
+                throw new IllegalArgumentException("Geçersiz rol: " + updateCustomerRequest.getRole() + ". Geçerli roller: " + java.util.Arrays.stream(Role.values()).map(Enum::name).collect(java.util.stream.Collectors.joining(", ")));
+            }
+        }
+
+        if (file != null && !file.isEmpty()) {
+            String fileName = file.getOriginalFilename();
+            if (fileName != null && !fileName.trim().isEmpty()) {
+
+                String filename = System.currentTimeMillis() + "_" + fileName;
+                String uploadDir = "src/main/resources/static/users/";
+                Path uploadPath = Paths.get(uploadDir);
+                Path filePath = uploadPath.resolve(filename);
+
+                try {
+
+                    if (!Files.exists(uploadPath)) {
+                        Files.createDirectories(uploadPath);
+                    }
+
+
+                    Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                    customerToUpdate.setImageUrl("/users/" + filename);
+
+                } catch (IOException ex) {
+
+                    throw new RuntimeException("Dosya kaydedilirken bir hata oluştu: " + ex.getMessage(), ex);
+                }
             }
         }
 
         customerRepository.save(customerToUpdate);
 
-        return String.format("Customer with the username: %s has been updated successfully.", updateCustomerRequest.getUsername());
+        return String.format("Customer with the username: %s has been updated successfully.", customerToUpdate.getUsername());
     }
+
 
 
 }

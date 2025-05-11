@@ -3,6 +3,7 @@ package com.swe212.onlineshop.dtos.request;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 
@@ -14,5 +15,4 @@ public class UpdateProductRequest {
     private String name;
     private String supplier;
     private BigDecimal price;
-    private String imageUrl;
 }

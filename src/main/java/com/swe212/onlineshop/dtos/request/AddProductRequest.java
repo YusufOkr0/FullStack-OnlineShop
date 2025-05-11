@@ -14,5 +14,4 @@ public class AddProductRequest {
     private String name;
     private String supplier;
     private BigDecimal price;
-    private String imageUrl;
 }

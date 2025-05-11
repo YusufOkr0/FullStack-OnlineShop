@@ -41,6 +41,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/users/**", "/products/**").permitAll()   // THIS IS FOR IMAGES.
 
                         // admin endpoints
                         .requestMatchers("/admin/**").hasRole("ADMIN")

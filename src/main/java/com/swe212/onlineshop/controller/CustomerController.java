@@ -7,6 +7,7 @@ import com.swe212.onlineshop.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -40,17 +41,16 @@ public class CustomerController {
                 .ok(message);
     }
 
-    @PutMapping("/updateById/{id}")
+    @PutMapping(value = "/updateById/{id}", consumes = "multipart/form-data")
     public ResponseEntity<String> updateCustomerById(
             @PathVariable(value = "id") Long customerId,
-            @RequestBody UpdateCustomerRequest updateCustomerRequest
+            @RequestPart("updateCustomerRequest") UpdateCustomerRequest updateCustomerRequest,
+            @RequestPart(value = "file", required = false) MultipartFile file
     ) {
-        String message = customerService.updateCustomerById(
-                customerId,
-                updateCustomerRequest
-        );
-        return ResponseEntity
-                .ok(message);
+
+        String message = customerService.updateCustomerById(customerId, updateCustomerRequest, file);
+
+        return ResponseEntity.ok(message);
     }
 
 

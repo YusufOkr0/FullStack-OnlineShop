@@ -1,5 +1,8 @@
 package com.swe212.onlineshop.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +33,7 @@ public class Customer {
     @Column(length = 255, nullable = false)
     private String password;
 
-    @Column(length = 50)
+    @Column(length = 100)
     private String imageUrl;
 
     @Enumerated(EnumType.STRING)

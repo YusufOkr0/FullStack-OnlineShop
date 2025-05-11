@@ -1,5 +1,6 @@
 package com.swe212.onlineshop.service;
 
+import com.swe212.onlineshop.dtos.CustomerDto;
 import com.swe212.onlineshop.dtos.OrderDto;
 import com.swe212.onlineshop.dtos.ProductDto;
 import com.swe212.onlineshop.entity.Order;
@@ -21,9 +22,13 @@ public class OrderService {
         List<Order> orders = orderRepository.findAll();
         return orders.stream()
                 .map(order -> {
-                    OrderDto orderDto = modelMapper.map(order,OrderDto.class);
+                    OrderDto orderDto = modelMapper.map(order, OrderDto.class);
                     ProductDto productDto = modelMapper.map(order.getProduct(), ProductDto.class);
+                    CustomerDto customerDto = modelMapper.map(order.getCustomer(), CustomerDto.class);
+
+                    customerDto.setOrders(null);
                     orderDto.setProduct(productDto);
+                    orderDto.setCustomer(customerDto);
 
                     return orderDto;
                 })
@@ -35,7 +40,10 @@ public class OrderService {
                 .orElseThrow(() -> new IllegalArgumentException("Sipariş bulunamadı: " + id));
         OrderDto orderDto = modelMapper.map(order, OrderDto.class);
         ProductDto productDto = modelMapper.map(order.getProduct(), ProductDto.class);
+        CustomerDto customerDto = modelMapper.map(order.getCustomer(), CustomerDto.class);
+        customerDto.setOrders(null);
         orderDto.setProduct(productDto);
+        orderDto.setCustomer(customerDto);
 
         return orderDto;
     }
