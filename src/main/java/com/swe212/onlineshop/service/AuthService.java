@@ -1,0 +1,72 @@
+package com.swe212.onlineshop.service;
+
+import com.swe212.onlineshop.dtos.request.LoginRequest;
+import com.swe212.onlineshop.dtos.request.RegisterRequest;
+import com.swe212.onlineshop.dtos.response.LoginResponse;
+import com.swe212.onlineshop.dtos.response.RegisterResponse;
+import com.swe212.onlineshop.entity.Customer;
+import com.swe212.onlineshop.entity.Role;
+import com.swe212.onlineshop.exception.TakenUsernameException;
+import com.swe212.onlineshop.repository.CustomerRepository;
+import com.swe212.onlineshop.security.JwtService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+
+@Service
+@RequiredArgsConstructor
+public class AuthService {
+
+    private final CustomerRepository customerRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
+
+    public RegisterResponse register(RegisterRequest request) {
+
+        if (customerRepository.existsByName(request.getUsername())) {
+            throw new TakenUsernameException(String.format("Username %s is taken.", request.getUsername()));
+        }
+
+        Customer newCustomer = Customer
+                .builder()
+                .name(request.getUsername())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .phone(request.getPhone())
+                .address(request.getAddress())
+                .role(Role.CUSTOMER)
+                .orders(new ArrayList<>())
+                .build();
+
+        customerRepository.save(newCustomer);
+
+        return RegisterResponse
+                .builder()
+                .message("Welcome to Online Shop.")
+                .build();
+    }
+
+    public LoginResponse login(LoginRequest request) {
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getUsername(),
+                        request.getPassword()
+                )
+        );
+        UserDetails userDetails = ((UserDetails) authentication.getPrincipal());
+
+        String jwtToken = jwtService.generateToken(userDetails);
+
+        return LoginResponse
+                .builder()
+                .token(jwtToken)
+                .build();
+    }
+}

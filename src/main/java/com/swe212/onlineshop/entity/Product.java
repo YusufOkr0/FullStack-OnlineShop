@@ -1,6 +1,5 @@
 package com.swe212.onlineshop.entity;
 
-import com.swe212.onlineshop.dtos.OrderDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

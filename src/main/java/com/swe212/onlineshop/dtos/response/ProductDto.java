@@ -1,4 +1,4 @@
-package com.swe212.onlineshop.dtos;
+package com.swe212.onlineshop.dtos.response;
 
 import lombok.Data;
 

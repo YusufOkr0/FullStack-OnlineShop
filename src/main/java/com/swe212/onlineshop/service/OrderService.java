@@ -1,7 +1,7 @@
 package com.swe212.onlineshop.service;
 
-import com.swe212.onlineshop.dtos.OrderDto;
-import com.swe212.onlineshop.dtos.ProductDto;
+import com.swe212.onlineshop.dtos.response.OrderDto;
+import com.swe212.onlineshop.dtos.response.ProductDto;
 import com.swe212.onlineshop.entity.Order;
 import com.swe212.onlineshop.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;

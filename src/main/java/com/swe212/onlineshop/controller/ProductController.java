@@ -1,6 +1,6 @@
 package com.swe212.onlineshop.controller;
 
-import com.swe212.onlineshop.dtos.ProductDto;
+import com.swe212.onlineshop.dtos.response.ProductDto;
 import com.swe212.onlineshop.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<ProductDto>> getAllProducts() {
         List<ProductDto> productDtoList = productService.getAllProducts();
         return ResponseEntity.ok(productDtoList);
