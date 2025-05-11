@@ -1,6 +1,6 @@
 package com.swe212.onlineshop.controller;
 
-import com.swe212.onlineshop.dtos.response.CustomerDto;
+import com.swe212.onlineshop.dtos.CustomerDto;
 import com.swe212.onlineshop.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

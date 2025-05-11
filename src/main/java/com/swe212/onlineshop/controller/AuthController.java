@@ -6,6 +6,8 @@ import com.swe212.onlineshop.dtos.response.LoginResponse;
 import com.swe212.onlineshop.dtos.response.RegisterResponse;
 import com.swe212.onlineshop.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,7 +27,9 @@ public class AuthController {
     ) {
         RegisterResponse response = authService.register(request);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
     }
 
     @PostMapping("/login")

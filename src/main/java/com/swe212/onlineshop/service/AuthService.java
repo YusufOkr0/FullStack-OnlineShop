@@ -51,7 +51,7 @@ public class AuthService {
 
         return RegisterResponse
                 .builder()
-                .message("Welcome to Online Shop.")
+                .message(String.format("Hello %s. Welcome to Online Shop",request.getUsername()))
                 .build();
     }
 

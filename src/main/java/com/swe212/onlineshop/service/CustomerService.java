@@ -1,6 +1,6 @@
 package com.swe212.onlineshop.service;
 
-import com.swe212.onlineshop.dtos.response.CustomerDto;
+import com.swe212.onlineshop.dtos.CustomerDto;
 import com.swe212.onlineshop.entity.Customer;
 import com.swe212.onlineshop.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.swe212.onlineshop.dtos.response;
+package com.swe212.onlineshop.dtos;
 
 
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ public class CustomerDto {
 
     private Long id;
 
-    private String name;
+    private String username;
 
     private String address;
 
