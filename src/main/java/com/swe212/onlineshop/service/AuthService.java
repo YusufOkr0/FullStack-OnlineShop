@@ -10,10 +10,12 @@ import com.swe212.onlineshop.exception.TakenUsernameException;
 import com.swe212.onlineshop.repository.CustomerRepository;
 import com.swe212.onlineshop.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +29,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final ModelMapper modelMapper;
 
     public RegisterResponse register(RegisterRequest request) {
 
@@ -64,9 +67,14 @@ public class AuthService {
 
         String jwtToken = jwtService.generateToken(userDetails);
 
+        Customer customer = customerRepository.findByName(request.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("Username %s not found.", request.getUsername())));
+
+
         return LoginResponse
                 .builder()
                 .token(jwtToken)
+                .userId(customer.getId())
                 .build();
     }
 }
