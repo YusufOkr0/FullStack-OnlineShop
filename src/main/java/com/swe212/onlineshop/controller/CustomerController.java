@@ -1,6 +1,8 @@
 package com.swe212.onlineshop.controller;
 
 import com.swe212.onlineshop.dtos.CustomerDto;
+import com.swe212.onlineshop.dtos.request.UpdateCustomerRequest;
+import com.swe212.onlineshop.dtos.request.UpdateProductRequest;
 import com.swe212.onlineshop.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,19 @@ public class CustomerController {
     public ResponseEntity<String> deleteCustomerById(@PathVariable(value = "id") Long id){
         String message = customerService.deleteCustomerById(id);
 
+        return ResponseEntity
+                .ok(message);
+    }
+
+    @PutMapping("/updateById/{id}")
+    public ResponseEntity<String> updateCustomerById(
+            @PathVariable(value = "id") Long customerId,
+            @RequestBody UpdateCustomerRequest updateCustomerRequest
+    ) {
+        String message = customerService.updateCustomerById(
+                customerId,
+                updateCustomerRequest
+        );
         return ResponseEntity
                 .ok(message);
     }

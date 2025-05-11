@@ -18,18 +18,21 @@ public class OrderController {
     @GetMapping
     public ResponseEntity<List<OrderDto>> getAllOrders() {
         List<OrderDto> orderDtos = orderService.getAllOrders();
-        return ResponseEntity.ok(orderDtos);
+        return ResponseEntity
+                .ok(orderDtos);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<OrderDto> getOrderById(@PathVariable Long id) {
         OrderDto orderDto = orderService.getOrderById(id);
-        return ResponseEntity.ok(orderDto);
+        return ResponseEntity
+                .ok(orderDto);
     }
 
     @DeleteMapping("/deleteById/{id}")
     public ResponseEntity<String> deleteOrderById(@PathVariable Long id) {
         String message = orderService.deleteOrderById(id);
-        return ResponseEntity.ok(message);
+        return ResponseEntity
+                .ok(message);
     }
 }

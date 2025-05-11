@@ -28,8 +28,7 @@ public class AuthController {
         RegisterResponse response = authService.register(request);
 
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+                .ok(response);
     }
 
     @PostMapping("/login")
@@ -40,6 +39,7 @@ public class AuthController {
         System.out.println("Login endpoint called.");
         LoginResponse response = authService.login(request);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity
+                .ok(response);
     }
 }

@@ -1,5 +1,6 @@
 package com.swe212.onlineshop.controller;
 
+import com.swe212.onlineshop.dtos.request.AddAdminRequest;
 import com.swe212.onlineshop.dtos.request.RegisterRequest;
 import com.swe212.onlineshop.dtos.response.RegisterResponse;
 import com.swe212.onlineshop.service.AdminService;
@@ -21,12 +22,11 @@ public class AdminController {
 
     @PostMapping("/add")
     public ResponseEntity<?> register(
-            @RequestBody RegisterRequest request
+            @RequestBody AddAdminRequest request
     ) {
         RegisterResponse response = adminService.addAdmin(request);
 
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+                .ok(response);
     }
 }

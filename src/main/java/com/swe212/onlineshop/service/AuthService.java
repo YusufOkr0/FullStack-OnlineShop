@@ -33,13 +33,13 @@ public class AuthService {
 
     public RegisterResponse register(RegisterRequest request) {
 
-        if (customerRepository.existsByName(request.getUsername())) {
+        if (customerRepository.existsByUsername(request.getUsername())) {
             throw new TakenUsernameException(String.format("Username %s is taken.", request.getUsername()));
         }
 
         Customer newCustomer = Customer
                 .builder()
-                .name(request.getUsername())
+                .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .phone(request.getPhone())
                 .address(request.getAddress())
@@ -67,7 +67,7 @@ public class AuthService {
 
         String jwtToken = jwtService.generateToken(userDetails);
 
-        Customer customer = customerRepository.findByName(request.getUsername())
+        Customer customer = customerRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("Username %s not found.", request.getUsername())));
 
 

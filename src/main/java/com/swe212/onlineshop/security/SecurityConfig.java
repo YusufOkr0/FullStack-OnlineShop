@@ -42,13 +42,23 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/products", "/products/*").hasAnyRole("ADMIN", "CUSTOMER")
-                        .requestMatchers(HttpMethod.GET, "/customers/*").hasAnyRole("ADMIN", "CUSTOMER")
-                        .requestMatchers(HttpMethod.DELETE, "/customers/deleteById/*").hasAnyRole("ADMIN", "CUSTOMER")
+                        // admin endpoints
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
 
+                        // product endpoints
+                        .requestMatchers(HttpMethod.POST, "/products/add").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/products/updateById/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/products/deleteById/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/products/**").hasAnyRole("ADMIN", "CUSTOMER")
+
+                        // customer endpoints
+                        .requestMatchers(HttpMethod.GET, "/customers").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/customers/**").hasAnyRole("ADMIN", "CUSTOMER")
+                        .requestMatchers(HttpMethod.PUT, "/customers/updateById/**").hasAnyRole("ADMIN", "CUSTOMER")
+                        .requestMatchers(HttpMethod.DELETE, "/customers/deleteById/**").hasAnyRole("ADMIN", "CUSTOMER")
+
+                        // order endpoints
                         .requestMatchers("/orders/**").hasRole("ADMIN")
-                        .requestMatchers("/products/deleteById/**").hasRole("ADMIN")
-                        .requestMatchers("/customers").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
                 )

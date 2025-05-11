@@ -4,14 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddAdminRequest {
-    private String username;
-    private String password;
-    private String phone;
-    private String address;
+public class AddProductRequest {
+    private String name;
+    private String supplier;
+    private BigDecimal price;
     private String imageUrl;
 }

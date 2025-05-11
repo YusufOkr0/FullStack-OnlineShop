@@ -43,7 +43,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             TakenUsernameException.class,
             IllegalArgumentException.class,
-            IllegalStateException.class
+            IllegalStateException.class,
+            TakenProductNameException.class,
+            ProductNotFoundException.class
     })
     public ResponseEntity<ErrorResponse> handleBadRequestExceptions(RuntimeException ex, HttpServletRequest request) {
         logger.warn("Bad request or illegal state exception for request: {}", request.getRequestURI(), ex);

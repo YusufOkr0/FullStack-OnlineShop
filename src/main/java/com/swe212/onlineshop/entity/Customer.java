@@ -19,7 +19,7 @@ public class Customer {
     private Long id;
 
     @Column(length = 16, nullable = false)
-    private String name;
+    private String username;
 
     @Column(length = 32, nullable = false)
     private String address;
@@ -29,6 +29,9 @@ public class Customer {
 
     @Column(length = 255, nullable = false)
     private String password;
+
+    @Column(length = 50)
+    private String imageUrl;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
