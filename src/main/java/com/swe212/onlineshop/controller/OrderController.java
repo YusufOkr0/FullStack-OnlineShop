@@ -2,8 +2,12 @@ package com.swe212.onlineshop.controller;
 
 import com.swe212.onlineshop.dtos.OrderDto;
 import com.swe212.onlineshop.dtos.request.CreateOrderRequest;
+import com.swe212.onlineshop.repository.OrderRepository;
 import com.swe212.onlineshop.service.OrderService;
+import com.swe212.onlineshop.service.ReportService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +19,7 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
+    private final ReportService reportService;
 
     @GetMapping
     public ResponseEntity<List<OrderDto>> getAllOrders() {
@@ -45,5 +50,17 @@ public class OrderController {
                 .ok()
                 .body(message);
 
+    }
+
+
+    @GetMapping("/{id}/receipt")
+    public ResponseEntity<byte[]> getOrderReceipt(@PathVariable Long id) throws Exception {
+
+        byte[] pdf = reportService.generateReceiptByOrderId(id);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=order_receipt.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
     }
 }

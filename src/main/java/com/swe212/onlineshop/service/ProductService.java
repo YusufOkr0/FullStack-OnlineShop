@@ -16,13 +16,12 @@ import java.io.IOException;
 import java.math.BigDecimal;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
 
-    public static final String PHOTO_URL = "static/no-photo-product.jpeg";
+    public static final String PHOTO_URL = "images/no-photo-product.jpeg";
 
     private final ProductRepository productRepository;
     private final ModelMapper modelMapper;
@@ -157,6 +156,9 @@ public class ProductService {
 
         return product;
     }
+
+
+
 
 
 }

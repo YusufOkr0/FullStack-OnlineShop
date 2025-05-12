@@ -26,7 +26,7 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 public class AuthService {
 
-    public static final String PHOTO_URL = "static/no-user-photo.png";
+    public static final String PHOTO_URL = "images/no-user-photo.png";
 
 
     private final CustomerRepository customerRepository;
