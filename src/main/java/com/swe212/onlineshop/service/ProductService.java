@@ -22,7 +22,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ProductService {
 
-    public static final String PHOTO_URL = "static/no-user-photo.png";
+    public static final String PHOTO_URL = "static/no-photo-product.jpeg";
 
     private final ProductRepository productRepository;
     private final ModelMapper modelMapper;

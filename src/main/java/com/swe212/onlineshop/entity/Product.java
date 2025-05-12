@@ -19,10 +19,10 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length=16, nullable=false)
+    @Column(length=50, nullable=false)
     private String name;
 
-    @Column(length=16, nullable=false)
+    @Column(length=100, nullable=false)
     private String supplier;
 
     @Column(precision = 10, scale = 2 ,nullable = false)

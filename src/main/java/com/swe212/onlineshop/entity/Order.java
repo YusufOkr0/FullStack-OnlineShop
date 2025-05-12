@@ -22,10 +22,10 @@ public class Order {
     @Column(nullable = false)
     private LocalDateTime date;
 
-    @Column(name="city", nullable = false, length = 32)
+    @Column(name="city", nullable = false, length = 200)
     private String city;
 
-    @Column(name = "status", nullable = false, length = 32)
+    @Column(name = "status", nullable = false)
     @Enumerated(value = EnumType.STRING)
     private OrderStatus status;
 
