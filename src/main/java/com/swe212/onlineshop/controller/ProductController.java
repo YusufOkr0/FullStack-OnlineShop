@@ -43,7 +43,7 @@ public class ProductController {
                 .ok(message);
     }
 
-    @PostMapping("/add")
+    @PostMapping(value = "/add",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> addProduct(
             @RequestPart(value = "addProductRequest") AddProductRequest addProductRequest,
             @RequestPart(value = "file",required = false) MultipartFile file) {

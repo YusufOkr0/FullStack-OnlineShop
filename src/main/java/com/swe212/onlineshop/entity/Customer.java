@@ -19,10 +19,10 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 16, nullable = false)
+    @Column(length = 50, nullable = false)
     private String username;
 
-    @Column(length = 32, nullable = false)
+    @Column(length = 200, nullable = false)
     private String address;
 
     @Column(length = 16, nullable = false)

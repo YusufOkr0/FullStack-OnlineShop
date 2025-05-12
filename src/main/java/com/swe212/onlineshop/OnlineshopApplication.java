@@ -1,11 +1,12 @@
 package com.swe212.onlineshop;
 
+import com.github.javafaker.Faker; // Faker kütüphanesini import et
 import com.swe212.onlineshop.entity.*;
 import com.swe212.onlineshop.repository.CustomerRepository;
 import com.swe212.onlineshop.repository.OrderRepository;
 import com.swe212.onlineshop.repository.ProductRepository;
-import com.swe212.onlineshop.util.ImageLoader; // Import the updated ImageLoader
-import com.swe212.onlineshop.util.ImageLoader.ImageData; // Import ImageData
+import com.swe212.onlineshop.util.ImageLoader;
+import com.swe212.onlineshop.util.ImageLoader.ImageData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -13,13 +14,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.io.File;
 import java.math.BigDecimal;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale; // Locale eklemek için
+import java.util.Random; // Rastgele seçimler için
 
 @SpringBootApplication
 @RequiredArgsConstructor
@@ -29,13 +30,11 @@ public class OnlineshopApplication implements CommandLineRunner {
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
-
     private final PasswordEncoder passwordEncoder;
 
     public static void main(String[] args) {
         SpringApplication.run(OnlineshopApplication.class, args);
     }
-
 
     @Override
     public void run(String... args) throws Exception {
@@ -45,94 +44,96 @@ public class OnlineshopApplication implements CommandLineRunner {
                 orderRepository.count() == 0
         ) {
 
-            // Load customer image data once
+            Faker faker = new Faker(new Locale("tr","TR"));
+            Random random = new Random();
+
             String customerImagePath = "static/no-user-photo.png";
             ImageData customerImageData = ImageLoader.loadImageData(customerImagePath);
-
-
-            Customer admin = Customer.builder()
-                    .username("admin")
-                    .password(passwordEncoder.encode("admin"))
-                    .phone("555-555-5555")
-                    .address("Admin Address")
-                    .role(Role.ADMIN)
-                    .imageBytes(customerImageData.bytes)
-                    .imageName(customerImageData.name)
-                    .imageType(customerImageData.type)
-                    .orders(new ArrayList<>())
-                    .build();
-            Customer customer = Customer.builder()
-                    .username("customer")
-                    .password(passwordEncoder.encode("customer"))
-                    .phone("222-222-2222")
-                    .address("Customer Address")
-                    .role(Role.CUSTOMER)
-                    .imageBytes(customerImageData.bytes)
-                    .imageName(customerImageData.name)
-                    .imageType(customerImageData.type)
-                    .orders(new ArrayList<>())
-                    .build();
-
-            customerRepository.save(admin);
-            customerRepository.save(customer);
-
 
             String productImagePath = "static/no-photo-product.jpeg";
             ImageData productImageData = ImageLoader.loadImageData(productImagePath);
 
 
-            List<Product> products = List.of(
-                    Product.builder()
-                            .name("Laptop")
-                            .supplier("Dell")
-                            .price(new BigDecimal("1200.00"))
-                            .imageName(productImageData.name)
-                            .imageType(productImageData.type)
-                            .imageBytes(productImageData.bytes)
-                            .build(),
-                    Product.builder()
-                            .name("Smartphone")
-                            .supplier("Samsung")
-                            .price(new BigDecimal("899.99"))
-                            .imageName(productImageData.name)
-                            .imageType(productImageData.type)
-                            .imageBytes(productImageData.bytes)
-                            .build(),
-                    Product.builder()
-                            .name("Headphones")
-                            .supplier("Sony")
-                            .price(new BigDecimal("199.50"))
-                            .imageName(productImageData.name)
-                            .imageType(productImageData.type)
-                            .imageBytes(productImageData.bytes)
-                            .build(),
-                    Product.builder()
-                            .name("Monitor")
-                            .supplier("LG")
-                            .price(new BigDecimal("350.75"))
-                            .imageName(productImageData.name)
-                            .imageType(productImageData.type)
-                            .imageBytes(productImageData.bytes)
-                            .build(),
-                    Product.builder()
-                            .name("Keyboard")
-                            .supplier("Logitech")
-                            .price(new BigDecimal("75.00"))
-                            .imageName(productImageData.name)
-                            .imageType(productImageData.type)
-                            .imageBytes(productImageData.bytes)
-                            .build()
-            );
+            List<Customer> customers = new ArrayList<>();
+            List<String> adminNames = List.of("Murat","Yusuf","Serhat","Gokdeniz","Erdogan");
 
-            productRepository.saveAll(products);
+            adminNames.forEach(adminName -> {
+                customers.add(Customer.builder()
+                        .username(adminName)
+                        .password(passwordEncoder.encode(adminName))
+                        .phone(faker.phoneNumber().cellPhone())
+                        .address(faker.address().fullAddress())
+                        .role(Role.ADMIN)
+                        .imageBytes(customerImageData.bytes)
+                        .imageName(customerImageData.name)
+                        .imageType(customerImageData.type)
+                        .orders(new ArrayList<>())
+                        .build());
+            });
 
 
-            Order order1 = new Order(null, LocalDateTime.now().minusDays(3), "Istanbul", OrderStatus.SHIPPED, customer, products.get(0));
-            Order order2 = new Order(null, LocalDateTime.now().minusDays(1), "Ankara", OrderStatus.SHIPPED, customer, products.get(1));
-            Order order3 = new Order(null, LocalDateTime.now(), "Izmir", OrderStatus.SHIPPED, customer, products.get(2));
 
-            orderRepository.saveAll(List.of(order1, order2, order3));
+            int numberOfCustomers = 20;
+            for (int i = 0; i < numberOfCustomers; i++) {
+                customers.add(Customer.builder()
+                        .username(faker.name().username())
+                        .password(passwordEncoder.encode("customer"))
+                        .phone(faker.phoneNumber().cellPhone())
+                        .address(faker.address().fullAddress())
+                        .role(Role.CUSTOMER)
+                        .imageBytes(customerImageData.bytes)
+                        .imageName(customerImageData.name)
+                        .imageType(customerImageData.type)
+                        .orders(new ArrayList<>())
+                        .build());
+            }
 
+
+            List<Customer> savedCustomers = customerRepository.saveAll(customers);
+
+
+
+            List<Product> products = new ArrayList<>();
+
+            int numberOfProducts = 40;
+            for (int i = 0; i < numberOfProducts; i++) {
+
+                BigDecimal price = new BigDecimal(faker.commerce().price().replace(",", "."));
+                products.add(Product.builder()
+                        .name(faker.commerce().productName())
+                        .supplier(faker.company().name())
+                        .price(price)
+                        .imageName(productImageData.name)
+                        .imageType(productImageData.type)
+                        .imageBytes(productImageData.bytes)
+                        .build());
+            }
+
+            List<Product> savedProducts = productRepository.saveAll(products);
+
+
+
+            List<Order> orders = new ArrayList<>();
+            int numberOfOrders = 30;
+            OrderStatus[] statuses = OrderStatus.values();
+
+            for (int i = 0; i < numberOfOrders; i++) {
+                Customer randomCustomer = savedCustomers.get(random.nextInt(savedCustomers.size()));
+
+                Product randomProduct = savedProducts.get(random.nextInt(savedProducts.size()));
+
+                LocalDateTime randomDate = faker
+                        .date()
+                        .past(20, java.util.concurrent.TimeUnit.DAYS).toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDateTime();
+
+                OrderStatus randomStatus = statuses[random.nextInt(statuses.length)];
+                String orderAddress = randomCustomer.getAddress();
+                orders.add(new Order(null, randomDate, orderAddress, randomStatus, randomCustomer, randomProduct));
+            }
+
+            orderRepository.saveAll(orders);
         }
     }
 }
