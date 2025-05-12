@@ -10,6 +10,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 
 
@@ -86,6 +87,14 @@ public class GlobalExceptionHandler {
                 .body(errorResponse);
     }
 
+    @ExceptionHandler(NotAllowedToDeleteCustomerException.class)
+    public ResponseEntity<Object> handleAccessDeniedException(NotAllowedToDeleteCustomerException ex, HttpServletRequest request) {
+        HttpStatus httpStatus = HttpStatus.FORBIDDEN;
+        ErrorResponse errorResponse = buildErrorResponse(httpStatus, ex.getMessage(), request);
+        return ResponseEntity
+                .status(httpStatus)
+                .body(errorResponse);
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, HttpServletRequest request) {

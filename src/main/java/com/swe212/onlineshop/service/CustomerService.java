@@ -4,15 +4,13 @@ import com.swe212.onlineshop.dtos.CustomerDto;
 import com.swe212.onlineshop.dtos.request.UpdateCustomerRequest;
 import com.swe212.onlineshop.entity.Customer;
 import com.swe212.onlineshop.entity.Role;
-import com.swe212.onlineshop.exception.CustomerNotFoundException;
-import com.swe212.onlineshop.exception.ImageNotFoundException;
-import com.swe212.onlineshop.exception.ImageProcessException;
-import com.swe212.onlineshop.exception.TakenUsernameException;
+import com.swe212.onlineshop.exception.*;
 import com.swe212.onlineshop.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,15 +56,20 @@ public class CustomerService {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new CustomerNotFoundException(String.format("User with the id %d not found: ", id)));
 
-        boolean isAdmin = SecurityContextHolder
+        UserDetails userFromContext = (UserDetails) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
+                .getPrincipal();
+
+        boolean IsUserFromContextAdmin = userFromContext
                 .getAuthorities()
                 .stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
 
-        if (!isAdmin && !customer.getId().equals(id)) {
-            throw new AccessDeniedException("You are not allowed to delete other users");
+        String userFromContextUsername = userFromContext.getUsername();
+
+        if (!IsUserFromContextAdmin && !customer.getUsername().equals(userFromContextUsername)) {
+            throw new NotAllowedToDeleteCustomerException("You are not allowed to delete other users");
         }
 
         customerRepository.delete(customer);
