@@ -105,7 +105,7 @@ public class ProductService {
         if (updateProductRequest != null) {
             String newName = updateProductRequest.getName();
             if (newName != null && !newName.trim().isEmpty()) {
-                if (!Objects.equals(productToUpdate.getName(), newName.trim())) {
+                if (!productToUpdate.getName().equals(newName)) {
                     if (productRepository.existsByName(newName.trim())) {
                         throw new TakenProductNameException(String.format("Product with the name: %s already exists.", newName.trim()));
                     }
