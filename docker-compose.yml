@@ -1,0 +1,55 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8090:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/java_react
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      DB_AUTO_COMMIT: false
+      HIBERNATE_DDL: update
+      SHOW_SQL: true
+      HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      FRONTEND_URL: http://frontend:80/
+    depends_on:
+      - postgres
+    networks:
+      network-swe212:
+
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "8091:80"
+    environment:
+      REACT_APP_API_URL: http://backend:8080/
+    depends_on:
+      - backend
+    networks:
+      network-swe212:
+
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: java_react
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 5591564
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      network-swe212:
+
+
+
+volumes:
+  pgdata:
+
+networks:
+  network-swe212:

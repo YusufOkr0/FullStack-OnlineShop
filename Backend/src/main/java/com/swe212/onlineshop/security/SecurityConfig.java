@@ -28,6 +28,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    @Value(${frontend.url})
+    private String FRONTEND_URL;
+
+
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
@@ -95,7 +99,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));      // CHECK THE PORT LATER WHEN OUR FRONTEND FINISHED.
+        configuration.setAllowedOrigins(List.of(FRONTEND_URL));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
