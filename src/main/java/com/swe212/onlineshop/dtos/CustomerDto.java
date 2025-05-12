@@ -24,7 +24,7 @@ public class CustomerDto {
 
     private String role;
 
-    private String imageUrl;
+    private boolean hasImage;
 
     @JsonManagedReference
     private List<OrderDto> orders;

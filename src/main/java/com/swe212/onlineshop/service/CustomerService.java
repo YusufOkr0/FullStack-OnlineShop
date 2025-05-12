@@ -4,20 +4,23 @@ import com.swe212.onlineshop.dtos.CustomerDto;
 import com.swe212.onlineshop.dtos.request.UpdateCustomerRequest;
 import com.swe212.onlineshop.entity.Customer;
 import com.swe212.onlineshop.entity.Role;
+import com.swe212.onlineshop.exception.CustomerNotFoundException;
+import com.swe212.onlineshop.exception.ImageNotFoundException;
+import com.swe212.onlineshop.exception.ImageProcessException;
 import com.swe212.onlineshop.exception.TakenUsernameException;
 import com.swe212.onlineshop.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -32,77 +35,99 @@ public class CustomerService {
 
         return customers
                 .stream()
-                .map(customer -> modelMapper.map(customer, CustomerDto.class))
-                .toList();
+                .map(customer -> {
+                    CustomerDto customerDto = modelMapper.map(customer, CustomerDto.class);
+                    if (customer.getImageBytes() != null)
+                        customerDto.setHasImage(true);
+                    return customerDto;
+                }
+                ).toList();
     }
 
     public CustomerDto getCustomerById(Long id) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı: " + id));
+                .orElseThrow(() -> new CustomerNotFoundException(String.format("User with the id %d not found: ", id)));
 
-        return modelMapper.map(customer,CustomerDto.class);
+        CustomerDto customerDto = modelMapper.map(customer, CustomerDto.class);
+        if (customer.getImageBytes() != null)
+            customerDto.setHasImage(true);
+        return customerDto;
     }
 
     public String deleteCustomerById(Long id) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Kullanıcı bulunamadı: " + id));
+                .orElseThrow(() -> new CustomerNotFoundException(String.format("User with the id %d not found: ", id)));
+
+        boolean isAdmin = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getAuthorities()
+                .stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isAdmin && !customer.getId().equals(id)) {
+            throw new AccessDeniedException("You are not allowed to delete other users");
+        }
 
         customerRepository.delete(customer);
-        return String.format("User with the id %s has been deleted successfully.",id);
+        return String.format("User with the id %s has been deleted successfully.", id);
     }
 
     public String updateCustomerById(Long customerId, UpdateCustomerRequest updateCustomerRequest, MultipartFile file) {
 
         Customer customerToUpdate = customerRepository.findById(customerId)
-                .orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadı: " + customerId));
+                .orElseThrow(() -> new CustomerNotFoundException(String.format("User with the id %d not found: ", customerId)));
 
-
-        if (updateCustomerRequest.getUsername() != null &&
-                !customerToUpdate.getUsername().equals(updateCustomerRequest.getUsername()) &&
-                customerRepository.existsByUsername(updateCustomerRequest.getUsername())) {
-            throw new TakenUsernameException("Bu kullanıcı adı zaten kullanımda: " + updateCustomerRequest.getUsername());
-        }
-
-
-        if (updateCustomerRequest.getUsername() != null)
-            customerToUpdate.setUsername(updateCustomerRequest.getUsername());
-        if (updateCustomerRequest.getPhone() != null)
-            customerToUpdate.setPhone(updateCustomerRequest.getPhone());
-        if (updateCustomerRequest.getAddress() != null)
-            customerToUpdate.setAddress(updateCustomerRequest.getAddress());
-
-
-        if (updateCustomerRequest.getRole() != null && !updateCustomerRequest.getRole().trim().isEmpty()) {
-            try {
-                customerToUpdate.setRole(Role.valueOf(updateCustomerRequest.getRole().toUpperCase()));
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Geçersiz rol: " + updateCustomerRequest.getRole() + ". Geçerli roller: " + java.util.Arrays.stream(Role.values()).map(Enum::name).collect(java.util.stream.Collectors.joining(", ")));
+        if (updateCustomerRequest != null) {
+            String newUsername = updateCustomerRequest.getUsername();
+            if (newUsername != null && !newUsername.trim().isEmpty()) {
+                if (!Objects.equals(customerToUpdate.getUsername(), newUsername.trim())) {
+                    if (customerRepository.existsByUsername(newUsername.trim())) {
+                        throw new TakenUsernameException(String.format("Username: %s is taken.", newUsername));
+                    }
+                    customerToUpdate.setUsername(newUsername.trim());
+                }
             }
+
+
+            String newPhone = updateCustomerRequest.getPhone();
+            if (newPhone != null && !newPhone.trim().isEmpty()) {
+                customerToUpdate.setPhone(newPhone.trim());
+            }
+
+            String newAddress = updateCustomerRequest.getAddress();
+            if (newAddress != null && !newAddress.trim().isEmpty()) {
+                customerToUpdate.setAddress(newAddress.trim());
+            }
+
+
+            String newRole = updateCustomerRequest.getRole();
+            if (newRole != null && !newRole.trim().isEmpty()) {
+                try {
+                    customerToUpdate.setRole(Role.valueOf(newRole.trim().toUpperCase()));
+                } catch (IllegalArgumentException e) {
+                    String validRoles = Arrays.stream(Role.values())
+                            .map(Enum::name)
+                            .collect(java.util.stream.Collectors.joining(", "));
+                    throw new IllegalArgumentException("Invalid role: '" + newRole + "'. Valid Roles are: " + validRoles);
+                }
+            }
+
         }
+
 
         if (file != null && !file.isEmpty()) {
-            String fileName = file.getOriginalFilename();
-            if (fileName != null && !fileName.trim().isEmpty()) {
+            try {
+                byte[] imageBytes = file.getBytes();
+                String originalFilename = file.getOriginalFilename();
+                String contentType = file.getContentType();
 
-                String filename = System.currentTimeMillis() + "_" + fileName;
-                String uploadDir = "src/main/resources/static/users/";
-                Path uploadPath = Paths.get(uploadDir);
-                Path filePath = uploadPath.resolve(filename);
+                customerToUpdate.setImageBytes(imageBytes);
+                customerToUpdate.setImageName(originalFilename);
+                customerToUpdate.setImageType(contentType);
 
-                try {
-
-                    if (!Files.exists(uploadPath)) {
-                        Files.createDirectories(uploadPath);
-                    }
-
-
-                    Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-                    customerToUpdate.setImageUrl("/users/" + filename);
-
-                } catch (IOException ex) {
-
-                    throw new RuntimeException("Dosya kaydedilirken bir hata oluştu: " + ex.getMessage(), ex);
-                }
+            } catch (IOException e) {
+                throw new ImageProcessException("Image Process Exception: " + e.getMessage());
             }
         }
 
@@ -111,6 +136,17 @@ public class CustomerService {
         return String.format("Customer with the username: %s has been updated successfully.", customerToUpdate.getUsername());
     }
 
+
+    public Customer getCustomerForImageById(Long id) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new CustomerNotFoundException(String.format("Customer with the id %d not found: ", id)));
+
+        if (customer.getImageBytes() == null || customer.getImageType() == null) {
+            throw new ImageNotFoundException(String.format("Customer with the id: %d does not have an image.", id));
+        }
+
+        return customer;
+    }
 
 
 }

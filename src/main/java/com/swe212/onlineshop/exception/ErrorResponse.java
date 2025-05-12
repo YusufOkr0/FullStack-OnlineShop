@@ -21,7 +21,5 @@ public class ErrorResponse {
     private String message;
     private String path;
     private LocalDateTime timestamp;
-    private Map<String, String> validationErrors;
-
 
 }

@@ -3,8 +3,10 @@ package com.swe212.onlineshop.controller;
 import com.swe212.onlineshop.dtos.CustomerDto;
 import com.swe212.onlineshop.dtos.request.UpdateCustomerRequest;
 import com.swe212.onlineshop.dtos.request.UpdateProductRequest;
+import com.swe212.onlineshop.entity.Customer;
 import com.swe212.onlineshop.service.CustomerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,7 +46,7 @@ public class CustomerController {
     @PutMapping(value = "/updateById/{id}", consumes = "multipart/form-data")
     public ResponseEntity<String> updateCustomerById(
             @PathVariable(value = "id") Long customerId,
-            @RequestPart("updateCustomerRequest") UpdateCustomerRequest updateCustomerRequest,
+            @RequestPart(value = "updateCustomerRequest",required = false) UpdateCustomerRequest updateCustomerRequest,
             @RequestPart(value = "file", required = false) MultipartFile file
     ) {
 
@@ -53,5 +55,14 @@ public class CustomerController {
         return ResponseEntity.ok(message);
     }
 
+    @GetMapping("/{id}/image")
+    public ResponseEntity<byte[]> getCustomerImage(@PathVariable Long id) {
+        Customer customer = customerService.getCustomerForImageById(id);
+
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.valueOf(customer.getImageType()))
+                .body(customer.getImageBytes());
+    }
 
 }

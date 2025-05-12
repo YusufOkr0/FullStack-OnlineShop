@@ -1,13 +1,11 @@
 package com.swe212.onlineshop.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 import java.util.List;
 
@@ -39,6 +37,16 @@ public class Customer {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    @Column(length = 100)
+    private String imageName;
+
+    @Column(length = 50)
+    private String imageType;
+
+    @Lob
+    @Column(name = "image_bytes")
+    private byte[] imageBytes;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders;
