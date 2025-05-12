@@ -31,9 +31,6 @@ public class Customer {
     @Column(length = 255, nullable = false)
     private String password;
 
-    @Column(length = 100)
-    private String imageUrl;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;

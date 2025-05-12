@@ -9,6 +9,7 @@ import com.swe212.onlineshop.entity.Role;
 import com.swe212.onlineshop.exception.TakenUsernameException;
 import com.swe212.onlineshop.repository.CustomerRepository;
 import com.swe212.onlineshop.security.JwtService;
+import com.swe212.onlineshop.util.ImageLoader;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +26,9 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 public class AuthService {
 
+    public static final String PHOTO_URL = "static/no-user-photo.png";
+
+
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -37,6 +41,8 @@ public class AuthService {
             throw new TakenUsernameException(String.format("Username %s is taken.", request.getUsername()));
         }
 
+        ImageLoader.ImageData customerImageData = ImageLoader.loadImageData(PHOTO_URL);
+
         Customer newCustomer = Customer
                 .builder()
                 .username(request.getUsername())
@@ -44,6 +50,9 @@ public class AuthService {
                 .phone(request.getPhone())
                 .address(request.getAddress())
                 .role(Role.CUSTOMER)
+                .imageBytes(customerImageData.bytes)
+                .imageName(customerImageData.name)
+                .imageType(customerImageData.type)
                 .orders(new ArrayList<>())
                 .build();
 

@@ -6,6 +6,7 @@ import com.swe212.onlineshop.dtos.request.UpdateProductRequest;
 import com.swe212.onlineshop.entity.Product;
 import com.swe212.onlineshop.exception.*;
 import com.swe212.onlineshop.repository.ProductRepository;
+import com.swe212.onlineshop.util.ImageLoader;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ProductService {
 
+    public static final String PHOTO_URL = "static/no-user-photo.png";
+
     private final ProductRepository productRepository;
     private final ModelMapper modelMapper;
 
@@ -29,7 +32,7 @@ public class ProductService {
         return products.stream()
                 .map(product -> {
                     ProductDto productDto = modelMapper.map(product, ProductDto.class);
-                    if(product.getImageBytes() != null)
+                    if (product.getImageBytes() != null)
                         productDto.setHasImage(true);
                     return productDto;
                 })
@@ -41,7 +44,7 @@ public class ProductService {
                 .orElseThrow(() -> new ProductNotFoundException(String.format("Product with the id: %d not found.", id)));
 
         ProductDto productDto = modelMapper.map(product, ProductDto.class);
-        if(product.getImageBytes() != null)
+        if (product.getImageBytes() != null)
             productDto.setHasImage(true);
 
         return productDto;
@@ -61,19 +64,24 @@ public class ProductService {
             throw new TakenProductNameException(String.format("Product with the name: %s already exists.", productName));
         }
 
-        byte[] imageBytes = null;
-        String imageName = null;
-        String imageType = null;
 
-        if (file != null && !file.isEmpty()) {
-            try {
+        byte[] imageBytes;
+        String imageName;
+        String imageType;
+
+        try {
+            if (file != null && !file.isEmpty()) {
                 imageBytes = file.getBytes();
                 imageName = file.getOriginalFilename();
                 imageType = file.getContentType();
-
-            } catch (IOException ex) {
-                throw new ImageProcessException("Image Process Exception: " + ex.getMessage());
+            } else {
+                ImageLoader.ImageData defaultImageData = ImageLoader.loadImageData(PHOTO_URL);
+                imageBytes = defaultImageData.bytes;
+                imageName = defaultImageData.name;
+                imageType = defaultImageData.type;
             }
+        } catch (IOException ex) {
+            throw new ImageProcessException("Error processing image for product: " + ex.getMessage());
         }
 
         Product newProduct = Product.builder()
@@ -106,10 +114,10 @@ public class ProductService {
             }
 
             if (updateProductRequest.getPrice() != null) {
-                 if (updateProductRequest.getPrice().compareTo(BigDecimal.ZERO) >= 0) {
-                productToUpdate.setPrice(updateProductRequest.getPrice());
+                if (updateProductRequest.getPrice().compareTo(BigDecimal.ZERO) >= 0) {
+                    productToUpdate.setPrice(updateProductRequest.getPrice());
                 } else {
-                   throw new InvalidPriceException("Price cannot be negative.");
+                    throw new InvalidPriceException("Price cannot be negative.");
                 }
             }
 
@@ -139,11 +147,11 @@ public class ProductService {
         return String.format("Product with the name: %s has been updated successfully.", productToUpdate.getName());
     }
 
-    public Product getProductForImageById(Long id){
+    public Product getProductForImageById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException(String.format("Product with the id: %d not found.", id)));
 
-        if(product.getImageBytes() == null || product.getImageName() == null || product.getImageType() == null){
+        if (product.getImageBytes() == null || product.getImageName() == null || product.getImageType() == null) {
             throw new ImageNotFoundException(String.format("Product with the id: %d does not have an image.", id));
         }
 

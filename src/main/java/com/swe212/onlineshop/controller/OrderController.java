@@ -1,6 +1,7 @@
 package com.swe212.onlineshop.controller;
 
 import com.swe212.onlineshop.dtos.OrderDto;
+import com.swe212.onlineshop.dtos.request.CreateOrderRequest;
 import com.swe212.onlineshop.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,5 +35,15 @@ public class OrderController {
         String message = orderService.deleteOrderById(id);
         return ResponseEntity
                 .ok(message);
+    }
+
+
+    @PostMapping("/buy")
+    public ResponseEntity<String> createOrder(@RequestBody CreateOrderRequest createOrderRequest){
+        String message = orderService.createOrder(createOrderRequest);
+        return ResponseEntity
+                .ok()
+                .body(message);
+
     }
 }
