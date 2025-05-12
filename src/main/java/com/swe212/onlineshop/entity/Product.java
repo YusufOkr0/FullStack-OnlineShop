@@ -1,8 +1,8 @@
 package com.swe212.onlineshop.entity;
 
-import com.swe212.onlineshop.dtos.OrderDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "products")
+@Builder
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +27,16 @@ public class Product {
 
     @Column(precision = 10, scale = 2 ,nullable = false)
     private BigDecimal price;
+
+    @Column(length = 100)
+    private String imageName;
+
+    @Column(length = 50)
+    private String imageType;
+
+    @Lob
+    @Column(name = "image_bytes")
+    private byte[] imageBytes;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders;

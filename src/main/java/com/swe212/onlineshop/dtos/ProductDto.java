@@ -10,4 +10,5 @@ public class ProductDto {
     private String name;
     private String supplier;
     private BigDecimal price;
+    private boolean hasImage;
 }

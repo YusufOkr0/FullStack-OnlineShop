@@ -1,10 +1,15 @@
 package com.swe212.onlineshop.controller;
 
 import com.swe212.onlineshop.dtos.CustomerDto;
+import com.swe212.onlineshop.dtos.request.UpdateCustomerRequest;
+import com.swe212.onlineshop.dtos.request.UpdateProductRequest;
+import com.swe212.onlineshop.entity.Customer;
 import com.swe212.onlineshop.service.CustomerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -16,7 +21,7 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<CustomerDto>> getAllCustomers(){
         List<CustomerDto> customerDto = customerService.getAllCustomers();
         return ResponseEntity
@@ -38,5 +43,26 @@ public class CustomerController {
                 .ok(message);
     }
 
+    @PutMapping(value = "/updateById/{id}", consumes = "multipart/form-data")
+    public ResponseEntity<String> updateCustomerById(
+            @PathVariable(value = "id") Long customerId,
+            @RequestPart(value = "updateCustomerRequest",required = false) UpdateCustomerRequest updateCustomerRequest,
+            @RequestPart(value = "file", required = false) MultipartFile file
+    ) {
+
+        String message = customerService.updateCustomerById(customerId, updateCustomerRequest, file);
+
+        return ResponseEntity.ok(message);
+    }
+
+    @GetMapping("/{id}/image")
+    public ResponseEntity<byte[]> getCustomerImage(@PathVariable Long id) {
+        Customer customer = customerService.getCustomerForImageById(id);
+
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.valueOf(customer.getImageType()))
+                .body(customer.getImageBytes());
+    }
 
 }

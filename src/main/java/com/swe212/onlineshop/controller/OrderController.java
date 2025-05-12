@@ -1,6 +1,7 @@
 package com.swe212.onlineshop.controller;
 
 import com.swe212.onlineshop.dtos.OrderDto;
+import com.swe212.onlineshop.dtos.request.CreateOrderRequest;
 import com.swe212.onlineshop.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,21 +16,34 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<OrderDto>> getAllOrders() {
         List<OrderDto> orderDtos = orderService.getAllOrders();
-        return ResponseEntity.ok(orderDtos);
+        return ResponseEntity
+                .ok(orderDtos);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<OrderDto> getOrderById(@PathVariable Long id) {
         OrderDto orderDto = orderService.getOrderById(id);
-        return ResponseEntity.ok(orderDto);
+        return ResponseEntity
+                .ok(orderDto);
     }
 
     @DeleteMapping("/deleteById/{id}")
     public ResponseEntity<String> deleteOrderById(@PathVariable Long id) {
         String message = orderService.deleteOrderById(id);
-        return ResponseEntity.ok(message);
+        return ResponseEntity
+                .ok(message);
+    }
+
+
+    @PostMapping("/buy")
+    public ResponseEntity<String> createOrder(@RequestBody CreateOrderRequest createOrderRequest){
+        String message = orderService.createOrder(createOrderRequest);
+        return ResponseEntity
+                .ok()
+                .body(message);
+
     }
 }

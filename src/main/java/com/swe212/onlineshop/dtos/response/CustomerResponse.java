@@ -1,8 +1,6 @@
-package com.swe212.onlineshop.dtos;
+package com.swe212.onlineshop.dtos.response;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.swe212.onlineshop.dtos.OrderDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +10,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CustomerDto {
+public class CustomerResponse {
 
     private Long id;
 
@@ -24,8 +22,6 @@ public class CustomerDto {
 
     private String role;
 
-    private boolean hasImage;
-
-    @JsonManagedReference
+    private String imageUrl;
     private List<OrderDto> orders;
 }
