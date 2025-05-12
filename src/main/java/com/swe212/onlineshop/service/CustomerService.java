@@ -104,18 +104,6 @@ public class CustomerService {
             }
 
 
-            String newRole = updateCustomerRequest.getRole();
-            if (newRole != null && !newRole.trim().isEmpty()) {
-                try {
-                    customerToUpdate.setRole(Role.valueOf(newRole.trim().toUpperCase()));
-                } catch (IllegalArgumentException e) {
-                    String validRoles = Arrays.stream(Role.values())
-                            .map(Enum::name)
-                            .collect(java.util.stream.Collectors.joining(", "));
-                    throw new IllegalArgumentException("Invalid role: '" + newRole + "'. Valid Roles are: " + validRoles);
-                }
-            }
-
         }
 
 

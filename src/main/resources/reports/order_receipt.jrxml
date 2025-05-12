@@ -1,0 +1,158 @@
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="order_receipt" pageWidth="300" pageHeight="600" columnWidth="260" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b8e7c3e5-4f2d-4b8a-9c3e-7f8e9c4b2d1a">
+<style name="TitleStyle" fontName="SansSerif" fontSize="16" isBold="true"/>
+<style name="SubTitleStyle" fontName="SansSerif" fontSize="12" isBold="true"/>
+<style name="LabelStyle" fontName="SansSerif" fontSize="10" isBold="true"/>
+<style name="ValueStyle" fontName="SansSerif" fontSize="10"/>
+<style name="FooterStyle" fontName="SansSerif" fontSize="8" isItalic="true"/>
+<style name="SmallTextStyle" fontName="SansSerif" fontSize="8"/>
+
+<parameter name="orderId" class="java.lang.Long"/>
+<parameter name="LOGO_IMAGE" class="java.io.InputStream"/>
+<parameter name="TITLE" class="java.lang.String"/>
+<parameter name="ORDER_RECEIPT" class="java.lang.String"/>
+<parameter name="BARCODE_IMAGE" class="java.io.InputStream"/>
+
+<field name="id" class="java.lang.Long"/>
+<field name="date" class="java.time.LocalDateTime"/>
+<field name="city" class="java.lang.String"/>
+<field name="status" class="java.lang.String"/>
+<field name="customerName" class="java.lang.String"/>
+<field name="productName" class="java.lang.String"/>
+<field name="totalPrice" class="java.math.BigDecimal"/>
+
+<background>
+    <band splitType="Stretch"/>
+</background>
+
+<title>
+    <band height="100" splitType="Stretch">
+        <image>
+            <reportElement x="100" y="0" width="100" height="40" uuid="a1b2c3d4-e5f6-7890-abcd-ef1234567890"/>
+            <imageExpression><![CDATA[$P{LOGO_IMAGE}]]></imageExpression>
+        </image>
+        <line>
+            <reportElement x="0" y="80" width="260" height="1" uuid="d4e5f6a7-b8c9-0123-def0-456789012345"/>
+            <graphicElement>
+                <pen lineWidth="0.5" lineColor="#000000"/>
+            </graphicElement>
+        </line>
+        <staticText>
+            <reportElement style="ValueStyle" x="0" y="60" width="260" height="20" uuid="982675cf-63f8-4281-91e2-04e92ba03e60"/>
+            <textElement textAlignment="Center" verticalAlignment="Middle"/>
+            <text><![CDATA[SWE212 Online Shop]]></text>
+        </staticText>
+
+        <staticText>
+            <reportElement style="ValueStyle" x="0" y="80" width="260" height="15" uuid="eb69ddaa-1632-4961-b274-bbed7aa25c39"/>
+            <textElement textAlignment="Center" verticalAlignment="Middle"/>
+            <text><![CDATA[Order Receipt]]></text>
+        </staticText>
+
+    </band>
+</title>
+
+<detail>
+    <band height="180" splitType="Stretch">
+        <staticText>
+            <reportElement style="LabelStyle" x="10" y="10" width="80" height="15" uuid="e5f6a7b8-c9d0-1234-ef01-567890123456"/>
+            <textElement verticalAlignment="Middle"/>
+            <text><![CDATA[Order ID:]]></text>
+        </staticText>
+        <textField>
+            <reportElement style="ValueStyle" x="100" y="10" width="150" height="15" uuid="f6a7b8c9-d0e1-2345-f012-678901234567"/>
+            <textElement verticalAlignment="Middle"/>
+            <textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
+        </textField>
+        <staticText>
+            <reportElement style="LabelStyle" x="10" y="30" width="80" height="15" uuid="a7b8c9d0-e1f2-3456-0123-789012345678"/>
+            <textElement verticalAlignment="Middle"/>
+            <text><![CDATA[Date:]]></text>
+        </staticText>
+        <textField>
+            <reportElement style="ValueStyle" x="100" y="30" width="150" height="15" uuid="b8c9d0e1-f2a3-4567-1234-890123456789"/>
+            <textElement verticalAlignment="Middle"/>
+            <textFieldExpression><![CDATA[$F{date}]]></textFieldExpression>
+        </textField>
+        <staticText>
+            <reportElement style="LabelStyle" x="10" y="50" width="80" height="15" uuid="c9d0e1f2-a3b4-5678-2345-901234567890"/>
+            <textElement verticalAlignment="Middle"/>
+            <text><![CDATA[City:]]></text>
+        </staticText>
+        <textField>
+            <reportElement style="ValueStyle" x="100" y="50" width="150" height="15" uuid="d0e1f2a3-b4c5-6789-3456-012345678901"/>
+            <textElement verticalAlignment="Middle"/>
+            <textFieldExpression><![CDATA[$F{city}]]></textFieldExpression>
+        </textField>
+        <staticText>
+            <reportElement style="LabelStyle" x="10" y="70" width="80" height="15" uuid="e1f2a3b4-c5d6-7890-4567-123456789012"/>
+            <textElement verticalAlignment="Middle"/>
+            <text><![CDATA[Status:]]></text>
+        </staticText>
+        <textField>
+            <reportElement style="ValueStyle" x="100" y="70" width="150" height="15" uuid="f2a3b4c5-d6e7-8901-5678-234567890123"/>
+            <textElement verticalAlignment="Middle"/>
+            <textFieldExpression><![CDATA[$F{status}]]></textFieldExpression>
+        </textField>
+        <staticText>
+            <reportElement style="LabelStyle" x="10" y="90" width="80" height="15" uuid="a3b4c5d6-e7f8-9012-6789-345678901234"/>
+            <textElement verticalAlignment="Middle"/>
+            <text><![CDATA[Customer:]]></text>
+        </staticText>
+        <textField>
+            <reportElement style="ValueStyle" x="100" y="90" width="150" height="15" uuid="b4c5d6e7-f8a9-0123-7890-456789012345"/>
+            <textElement verticalAlignment="Middle"/>
+            <textFieldExpression><![CDATA[$F{customerName}]]></textFieldExpression>
+        </textField>
+        <staticText>
+            <reportElement style="LabelStyle" x="10" y="110" width="80" height="15" uuid="c5d6e7f8-a9b0-1234-8901-567890123456"/>
+            <textElement verticalAlignment="Middle"/>
+            <text><![CDATA[Product:]]></text>
+        </staticText>
+        <textField>
+            <reportElement style="ValueStyle" x="100" y="110" width="150" height="15" uuid="982675cf-63f8-4281-91e2-04e92ba03e60"/>
+            <textElement verticalAlignment="Middle"/>
+            <textFieldExpression><![CDATA[$F{productName}]]></textFieldExpression>
+        </textField>
+        <staticText>
+            <reportElement style="LabelStyle" x="10" y="130" width="80" height="15" uuid="d6e7f8a9-b0c1-2345-9012-678901234567"/>
+            <textElement verticalAlignment="Middle"/>
+            <text><![CDATA[Total Price:]]></text>
+        </staticText>
+        <textField pattern="$#,##0.00">
+            <reportElement style="ValueStyle" x="100" y="130" width="150" height="15" uuid="e7f8a9b0-c1d2-3456-0123-789012345678"/>
+            <textElement verticalAlignment="Middle"/>
+            <textFieldExpression><![CDATA[$F{totalPrice}]]></textFieldExpression>
+        </textField>
+        <line>
+            <reportElement x="0" y="150" width="260" height="1" uuid="f8a9b0c1-d2e3-4567-1234-890123456789"/>
+            <graphicElement>
+                <pen lineWidth="0.5" lineColor="#000000"/>
+            </graphicElement>
+        </line>
+    </band>
+</detail>
+
+<pageFooter>
+    <band height="100" splitType="Stretch">
+        <staticText>
+            <reportElement style="FooterStyle" x="0" y="10" width="260" height="15" uuid="a9b0c1d2-e3f4-5678-2345-901234567890"/>
+            <textElement textAlignment="Center" verticalAlignment="Middle"/>
+            <text><![CDATA[Thank you for shopping with SWE212!]]></text>
+        </staticText>
+        <staticText>
+            <reportElement style="SmallTextStyle" x="0" y="30" width="260" height="15" uuid="b0c1d2e3-f4a5-6789-3456-012345678901"/>
+            <textElement textAlignment="Center" verticalAlignment="Middle"/>
+            <text><![CDATA[Contact: info@swe212.com | www.swe212.com]]></text>
+        </staticText>
+        <staticText>
+            <reportElement style="SmallTextStyle" x="0" y="45" width="260" height="15" uuid="c1d2e3f4-a5b6-7890-4567-123456789012"/>
+            <textElement textAlignment="Center" verticalAlignment="Middle"/>
+            <text><![CDATA[1234 Commerce St, Tech City, TC 56789]]></text>
+        </staticText>
+        <image>
+            <reportElement x="100" y="65" width="150" height="30" uuid="d2e3f4a5-b6c7-8901-5678-234567890123"/>
+            <imageExpression><![CDATA[$P{BARCODE_IMAGE}]]></imageExpression>
+        </image>
+    </band>
+</pageFooter>
+</jasperReport>

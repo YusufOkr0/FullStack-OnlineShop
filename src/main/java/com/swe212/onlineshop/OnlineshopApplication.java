@@ -44,18 +44,18 @@ public class OnlineshopApplication implements CommandLineRunner {
                 orderRepository.count() == 0
         ) {
 
-            Faker faker = new Faker(new Locale("tr","TR"));
+            Faker faker = new Faker(Locale.CANADA);
             Random random = new Random();
 
-            String customerImagePath = "static/no-user-photo.png";
+            String customerImagePath = "images/no-user-photo.png";
             ImageData customerImageData = ImageLoader.loadImageData(customerImagePath);
 
-            String productImagePath = "static/no-photo-product.jpeg";
+            String productImagePath = "images/no-photo-product.jpeg";
             ImageData productImageData = ImageLoader.loadImageData(productImagePath);
 
 
             List<Customer> customers = new ArrayList<>();
-            List<String> adminNames = List.of("Murat","Yusuf","Serhat","Gokdeniz","Erdogan");
+            List<String> adminNames = List.of("Murat","Yusuf","Serhat","Gökdeniz","Erdogan");
 
             adminNames.forEach(adminName -> {
                 customers.add(Customer.builder()
@@ -115,7 +115,6 @@ public class OnlineshopApplication implements CommandLineRunner {
 
             List<Order> orders = new ArrayList<>();
             int numberOfOrders = 30;
-            OrderStatus[] statuses = OrderStatus.values();
 
             for (int i = 0; i < numberOfOrders; i++) {
                 Customer randomCustomer = savedCustomers.get(random.nextInt(savedCustomers.size()));
@@ -124,11 +123,15 @@ public class OnlineshopApplication implements CommandLineRunner {
 
                 LocalDateTime randomDate = faker
                         .date()
-                        .past(20, java.util.concurrent.TimeUnit.DAYS).toInstant()
+                        .past(10, java.util.concurrent.TimeUnit.DAYS).toInstant()
                         .atZone(ZoneId.systemDefault())
                         .toLocalDateTime();
 
-                OrderStatus randomStatus = statuses[random.nextInt(statuses.length)];
+                OrderStatus randomStatus = OrderStatus.SHIPPED;
+
+                if(randomDate.isBefore(LocalDateTime.now().minusDays(2L)))
+                    randomStatus = OrderStatus.DELIVERED;
+
                 String orderAddress = randomCustomer.getAddress();
                 orders.add(new Order(null, randomDate, orderAddress, randomStatus, randomCustomer, randomProduct));
             }

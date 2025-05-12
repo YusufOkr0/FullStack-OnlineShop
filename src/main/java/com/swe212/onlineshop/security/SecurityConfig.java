@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/**","/api-docs","/swagger-ui/**","/products/**").permitAll()
 
                         // admin endpoints
                         .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -49,7 +49,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/products/add").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/products/updateById/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/products/deleteById/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/products/**").hasAnyRole("ADMIN", "CUSTOMER")
                         .requestMatchers(HttpMethod.GET, "/products/*/image").hasAnyRole("ADMIN", "CUSTOMER")
 
                         // customer endpoints

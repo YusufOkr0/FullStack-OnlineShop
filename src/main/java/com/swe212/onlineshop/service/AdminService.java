@@ -16,7 +16,7 @@ import java.util.ArrayList;
 @Service
 @RequiredArgsConstructor
 public class AdminService {
-    public static final String PHOTO_URL = "static/no-user-photo.png";
+    public static final String PHOTO_URL = "images/no-user-photo.png";
 
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
