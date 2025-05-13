@@ -123,7 +123,7 @@ public class OnlineshopApplication implements CommandLineRunner {
 
                 LocalDateTime randomDate = faker
                         .date()
-                        .past(10, java.util.concurrent.TimeUnit.DAYS).toInstant()
+                        .past(4, java.util.concurrent.TimeUnit.DAYS).toInstant()
                         .atZone(ZoneId.systemDefault())
                         .toLocalDateTime();
 

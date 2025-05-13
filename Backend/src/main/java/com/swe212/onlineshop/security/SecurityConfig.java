@@ -1,6 +1,7 @@
 package com.swe212.onlineshop.security;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -28,7 +29,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Value(${frontend.url})
+    @Value("${frontend.url}")
     private String FRONTEND_URL;
 
 

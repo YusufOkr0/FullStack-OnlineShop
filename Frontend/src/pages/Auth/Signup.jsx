@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+
+
 const Signup = () => {
   const [username, setUsername] = useState("");
   const [phone, setPhone] = useState("");
@@ -9,6 +11,9 @@ const Signup = () => {
   const [address, setAddress] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  const API_BASE_URL = import.meta.env.VITE_APP_BACKEND_URL || 'http://localhost:8090';
+
 
   // Prevent scrolling
   useEffect(() => {
@@ -57,7 +62,7 @@ const Signup = () => {
     }
 
     try {
-      await axios.post("http://localhost:8080/auth/register", {
+      await axios.post(API_BASE_URL + "/auth/register", {
         username,
         phone,
         password,

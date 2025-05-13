@@ -2,9 +2,10 @@ version: '3.8'
 services:
   backend:
     build:
-      context: ./backend
+      context: ./Backend
+    container_name: backend
     ports:
-      - "8090:8080"
+      - "8090:8090"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/java_react
       SPRING_DATASOURCE_USERNAME: postgres
@@ -13,20 +14,21 @@ services:
       HIBERNATE_DDL: update
       SHOW_SQL: true
       HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
-      FRONTEND_URL: http://frontend:80/
+      FRONTEND_URL: http://localhost:8091/
     depends_on:
       - postgres
-    networks:
+    networks:     ## BUNLARA DA GEREK YOK ASLINDA. SADECE BACKEND'IN POSTGRES CONTAINER'I ILE AYNI AGDA OLMASI YETERLI.
       network-swe212:
 
 
   frontend:
     build:
-      context: ./frontend
+      context: ./Frontend
+      args:
+        - VITE_APP_BACKEND_URL=http://localhost:8090  # NO NEED FOR THIS BUT KEEP IT FOR NOW
+    container_name: frontend
     ports:
       - "8091:80"
-    environment:
-      REACT_APP_API_URL: http://backend:8080/
     depends_on:
       - backend
     networks:
@@ -34,13 +36,14 @@ services:
 
 
   postgres:
-    image: postgres:15
+    image: postgres:latest
+    container_name: postgres
     environment:
       POSTGRES_DB: java_react
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 5591564
+      POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"
+      - "5435:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
