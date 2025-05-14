@@ -59,8 +59,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/customers/*/image").hasAnyRole("ADMIN", "CUSTOMER")
                         // order endpoints
 
-                        .requestMatchers("/orders/**").hasRole("ADMIN")
                         .requestMatchers("/orders/buy").hasAnyRole("ADMIN","CUSTOMER")
+                        .requestMatchers("/orders/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
                 )

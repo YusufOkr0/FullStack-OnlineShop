@@ -35,7 +35,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({
             CustomerNotFoundException.class,
             ImageNotFoundException.class,
-            ProductNotFoundException.class
+            ProductNotFoundException.class,
+            OrderNotFoundException.class,
     })
     public ResponseEntity<ErrorResponse> handleCustomerNotFoundException(RuntimeException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.NOT_FOUND; // 404

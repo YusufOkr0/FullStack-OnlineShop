@@ -20,6 +20,7 @@ import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home/Home";
 import OrderList from "./pages/Orders/OrderList";
+import ErrorComponent from "./pages/ErrorComponent";
 
 function App() {
   return (
@@ -56,7 +57,7 @@ function App() {
           <Route
             path="/orders"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["ADMIN"]}>
                 <OrderList />
               </ProtectedRoute>
             }
@@ -64,7 +65,7 @@ function App() {
           <Route
             path="/orders/:id"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute allowedRoles={["ADMIN"]}>
                 <OrderDetail />
               </ProtectedRoute>
             }
@@ -125,7 +126,18 @@ function App() {
           />
 
           {/* NOT FOUND - Anasayfaya yönlendir */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route
+            path="*"
+            element={
+              <ErrorComponent
+                status={500}
+                message={
+                  "An unexpected error occurred. Please try again later."
+                }
+                error={"Internal Server Error"}
+              />
+            }
+          />
         </Routes>
       </Router>
     </AuthProvider>
