@@ -1,7 +1,10 @@
 package com.swe212.onlineshop.service;
 
+import com.swe212.onlineshop.entity.Customer;
 import com.swe212.onlineshop.entity.Order;
 import com.swe212.onlineshop.exception.OrderNotFoundException;
+import com.swe212.onlineshop.exception.ReportProcessException;
+import com.swe212.onlineshop.repository.CustomerRepository;
 import com.swe212.onlineshop.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import net.sf.jasperreports.engine.*;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -19,6 +23,7 @@ import java.util.Map;
 public class ReportService {
 
     private final OrderRepository orderRepository;
+    private final CustomerRepository customerRepository;
 
     public byte[] generateReceiptByOrderId(Long orderId) {
         Order order = orderRepository.findById(orderId)
@@ -48,9 +53,37 @@ public class ReportService {
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, orderDataSource);
             return JasperExportManager.exportReportToPdf(jasperPrint);
         } catch (JRException | IOException e) {
-            throw new RuntimeException(e);
+            throw new ReportProcessException(String.format("Exception occur when create the order_receipt report:%s ",e.getMessage()),e);
         }
     }
 
+
+
+
+    public byte[] generateCustomersListAsPdf(){
+        List<Customer> customerList = customerRepository.findAll();
+        try {
+
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("REPORT_TITLE", "SWE212 Current Customer List");
+            parameters.put("REPORT_FOOTER_TEXT", "Automatically generated report");
+
+            ClassPathResource classPathResource = new ClassPathResource("/reports/customers_list.jrxml");
+            JasperReport jasperReport = JasperCompileManager.compileReport(classPathResource.getInputStream());
+
+            JRBeanCollectionDataSource orderDataSource = new JRBeanCollectionDataSource(customerList);
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(
+                    jasperReport,
+                    parameters,
+                    orderDataSource
+            );
+
+            return JasperExportManager.exportReportToPdf(jasperPrint);
+
+        } catch (JRException | IOException e) {
+            throw new ReportProcessException(String.format("Exception occur when create the customers_list report:%s ",e.getMessage()),e);
+        }
+    }
 
 }
