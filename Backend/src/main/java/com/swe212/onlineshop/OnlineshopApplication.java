@@ -73,7 +73,7 @@ public class OnlineshopApplication implements CommandLineRunner {
 
 
 
-            int numberOfCustomers = 20;
+            int numberOfCustomers = 70;
             for (int i = 0; i < numberOfCustomers; i++) {
                 customers.add(Customer.builder()
                         .username(faker.name().username())
@@ -95,7 +95,7 @@ public class OnlineshopApplication implements CommandLineRunner {
 
             List<Product> products = new ArrayList<>();
 
-            int numberOfProducts = 40;
+            int numberOfProducts = 50;
             for (int i = 0; i < numberOfProducts; i++) {
 
                 BigDecimal price = new BigDecimal(faker.commerce().price().replace(",", "."));
@@ -114,7 +114,7 @@ public class OnlineshopApplication implements CommandLineRunner {
 
 
             List<Order> orders = new ArrayList<>();
-            int numberOfOrders = 30;
+            int numberOfOrders = 50;
 
             for (int i = 0; i < numberOfOrders; i++) {
                 Customer randomCustomer = savedCustomers.get(random.nextInt(savedCustomers.size()));
@@ -123,7 +123,7 @@ public class OnlineshopApplication implements CommandLineRunner {
 
                 LocalDateTime randomDate = faker
                         .date()
-                        .past(10, java.util.concurrent.TimeUnit.DAYS).toInstant()
+                        .past(4, java.util.concurrent.TimeUnit.DAYS).toInstant()
                         .atZone(ZoneId.systemDefault())
                         .toLocalDateTime();
 

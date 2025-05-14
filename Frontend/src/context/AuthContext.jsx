@@ -4,6 +4,8 @@ import axios from "axios";
 
 const AuthContext = createContext();
 
+const API_BASE_URL = import.meta.env.VITE_APP_BACKEND_URL || 'http://localhost:8090';
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -39,7 +41,7 @@ export const AuthProvider = ({ children }) => {
   // Login işlemi
   const login = async (username, password) => {
     try {
-      const response = await axios.post("http://localhost:8080/auth/login", {
+      const response = await axios.post(API_BASE_URL + "/auth/login", {
         username,
         password,
       });

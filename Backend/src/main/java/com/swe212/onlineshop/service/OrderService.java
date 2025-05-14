@@ -9,6 +9,7 @@ import com.swe212.onlineshop.entity.Order;
 import com.swe212.onlineshop.entity.OrderStatus;
 import com.swe212.onlineshop.entity.Product;
 import com.swe212.onlineshop.exception.CustomerNotFoundException;
+import com.swe212.onlineshop.exception.OrderNotFoundException;
 import com.swe212.onlineshop.exception.ProductNotFoundException;
 import com.swe212.onlineshop.repository.CustomerRepository;
 import com.swe212.onlineshop.repository.OrderRepository;
@@ -49,7 +50,7 @@ public class OrderService {
 
     public OrderDto getOrderById(Long id) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Sipariş bulunamadı: " + id));
+                .orElseThrow(() -> new OrderNotFoundException("Sipariş bulunamadı: " + id));
         OrderDto orderDto = modelMapper.map(order, OrderDto.class);
         ProductDto productDto = modelMapper.map(order.getProduct(), ProductDto.class);
         CustomerDto customerDto = modelMapper.map(order.getCustomer(), CustomerDto.class);

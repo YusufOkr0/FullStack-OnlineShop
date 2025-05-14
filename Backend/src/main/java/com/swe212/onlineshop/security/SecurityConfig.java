@@ -1,6 +1,7 @@
 package com.swe212.onlineshop.security;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -27,6 +28,10 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    @Value("${frontend.url}")
+    private String FRONTEND_URL;
+
 
     private final UserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -59,8 +64,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/customers/*/image").hasAnyRole("ADMIN", "CUSTOMER")
                         // order endpoints
 
-                        .requestMatchers("/orders/**").hasRole("ADMIN")
                         .requestMatchers("/orders/buy").hasAnyRole("ADMIN","CUSTOMER")
+                        .requestMatchers("/orders/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
                 )
@@ -95,7 +100,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));      // CHECK THE PORT LATER WHEN OUR FRONTEND FINISHED.
+        configuration.setAllowedOrigins(List.of(FRONTEND_URL));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../services/api";
-
-const API_BASE_URL = "http://localhost:8080";
+import ErrorComponent from "../ErrorComponent";
+import styles from "../../components/css/Profile/MyProfileStyle";
 
 const MyProfile = () => {
   const { user, fetchUser, logout } = useAuth();
@@ -18,11 +18,10 @@ const MyProfile = () => {
   );
   const [newPhotoFile, setNewPhotoFile] = useState(null);
   const [previewPhotoUrl, setPreviewPhotoUrl] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [photoLoading, setPhotoLoading] = useState(false);
 
-  // Kullanıcı verilerini ve fotoğrafı çekme
   useEffect(() => {
     if (user) {
       setProfile({
@@ -33,13 +32,12 @@ const MyProfile = () => {
         role: user.role || "",
       });
 
-      // Fotoğrafı API'den çek
       const fetchPhoto = async () => {
         if (!user.id) return;
         setPhotoLoading(true);
         try {
           const response = await api.get(`/customers/${user.id}/image`, {
-            responseType: "blob", // Resmi blob olarak al
+            responseType: "blob",
           });
           const imageUrl = URL.createObjectURL(response.data);
           setCurrentPhotoUrl(imageUrl);
@@ -47,7 +45,6 @@ const MyProfile = () => {
             setPreviewPhotoUrl(imageUrl);
           }
         } catch (err) {
-          console.error("Photo fetch error:", err);
           setCurrentPhotoUrl("https://via.placeholder.com/150");
           if (!newPhotoFile) {
             setPreviewPhotoUrl("https://via.placeholder.com/150");
@@ -59,9 +56,23 @@ const MyProfile = () => {
 
       fetchPhoto();
     }
+
+    return () => {
+      if (
+        currentPhotoUrl &&
+        currentPhotoUrl !== "https://via.placeholder.com/150"
+      ) {
+        URL.revokeObjectURL(currentPhotoUrl);
+      }
+      if (
+        previewPhotoUrl &&
+        previewPhotoUrl !== "https://via.placeholder.com/150"
+      ) {
+        URL.revokeObjectURL(previewPhotoUrl);
+      }
+    };
   }, [user, newPhotoFile]);
 
-  // FadeIn animasyonu ekleme
   useEffect(() => {
     const styleSheet = document.createElement("style");
     styleSheet.type = "text/css";
@@ -90,7 +101,7 @@ const MyProfile = () => {
     if (file) {
       setNewPhotoFile(file);
       setPreviewPhotoUrl(URL.createObjectURL(file));
-      setError("");
+      setError(null);
     } else {
       setNewPhotoFile(null);
       setPreviewPhotoUrl("");
@@ -99,17 +110,18 @@ const MyProfile = () => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    setError("");
+    setError(null);
     setSuccessMessage("");
 
     if (!profile.id) {
-      setError("Kullanıcı ID bulunamadı. Güncelleme yapılamıyor.");
+      setError({
+        status: null,
+        message: "Kullanıcı ID bulunamadı. Güncelleme yapılamıyor.",
+      });
       return;
     }
 
-    // Orijinal kullanıcı adını kaydet
     const originalUsername = user.username;
-
     const formData = new FormData();
     const updateCustomerRequest = {
       username: profile.username,
@@ -139,180 +151,45 @@ const MyProfile = () => {
         }
       );
 
-      setSuccessMessage(response.data);
-      alert("Profil başarıyla güncellendi!");
+      setSuccessMessage(
+        response.data?.message || "Profil başarıyla güncellendi!"
+      );
+      setTimeout(() => setSuccessMessage(""), 3000);
 
       setNewPhotoFile(null);
       setPreviewPhotoUrl("");
 
-      // Kullanıcı adı değiştiyse logout yap
       if (profile.username !== originalUsername) {
         alert("Kullanıcı adı değiştiği için oturumunuz kapatılacak.");
         logout();
-        return; // Logout sonrası diğer işlemleri atla
+        return;
       }
 
       if (fetchUser) {
         await fetchUser();
       }
     } catch (err) {
-      const errorMessage =
-        err.response?.data?.message ||
-        err.response?.data?.error ||
-        err.response?.data ||
-        "Profil güncellenemedi.";
-      setError(errorMessage);
-      console.error("Update Error:", err.response || err);
+      setError({
+        status: err.response?.status || null,
+        message: err.response?.data?.message || "Profil güncellenemedi.",
+        errorMessage: err.response?.data?.error || "Bir Hata Oluştu",
+      });
+      console.error("Update error:", err);
     }
-  };
-
-  // Responsive inline styles (ProductList'ten uyarlandı)
-  const isMobile = window.innerWidth <= 768;
-  const styles = {
-    container: {
-      minHeight: "100vh",
-      width: "100%",
-      background: "linear-gradient(135deg, #e0e7ff 0%, #f4f7fc 100%)",
-      padding: isMobile ? "20px" : "40px",
-      boxSizing: "border-box",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-    },
-    card: {
-      backgroundColor: "#ffffff",
-      borderRadius: "12px",
-      boxShadow: "0 8px 24px rgba(0, 0, 0, 0.08)",
-      padding: isMobile ? "20px" : "30px",
-      width: isMobile ? "100%" : "600px",
-      textAlign: "center",
-      transition: "all 0.3s ease",
-      animation: "fadeIn 0.5s ease-in-out",
-    },
-    title: {
-      fontSize: isMobile ? "28px" : "36px",
-      color: "#1a202c",
-      fontWeight: "700",
-      fontFamily: "'Inter', sans-serif",
-      marginBottom: isMobile ? "20px" : "30px",
-    },
-    form: {
-      display: "flex",
-      flexDirection: "column",
-      gap: "20px",
-    },
-    photoContainer: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      marginBottom: "20px",
-    },
-    photo: {
-      width: isMobile ? "120px" : "150px",
-      height: isMobile ? "120px" : "150px",
-      borderRadius: "50%",
-      objectFit: "cover",
-      marginBottom: "10px",
-      border: "2px solid #dee2e6",
-      backgroundColor: "#f8f9fa",
-    },
-    photoInput: {
-      display: "none",
-    },
-    photoButton: {
-      padding: isMobile ? "8px 16px" : "10px 20px",
-      backgroundColor: "#5a67d8",
-      color: "#ffffff",
-      fontSize: isMobile ? "14px" : "16px",
-      fontWeight: "600",
-      fontFamily: "'Inter', sans-serif",
-      borderRadius: "8px",
-      border: "none",
-      cursor: "pointer",
-      transition: "all 0.3s ease",
-    },
-    formGroup: {
-      textAlign: "left",
-    },
-    label: {
-      fontSize: isMobile ? "14px" : "16px",
-      color: "#1a202c",
-      fontWeight: "600",
-      fontFamily: "'Inter', sans-serif",
-      marginBottom: "8px",
-      display: "block",
-    },
-    input: {
-      width: "100%",
-      padding: isMobile ? "8px" : "10px",
-      fontSize: isMobile ? "14px" : "16px",
-      fontFamily: "'Inter', sans-serif",
-      border: "1px solid #dee2e6",
-      borderRadius: "8px",
-      outline: "none",
-      transition: "border-color 0.3s",
-    },
-    updateButton: {
-      padding: isMobile ? "10px 20px" : "12px 24px",
-      backgroundColor: "#5a67d8",
-      color: "#ffffff",
-      fontSize: isMobile ? "14px" : "16px",
-      fontWeight: "600",
-      fontFamily: "'Inter', sans-serif",
-      borderRadius: "8px",
-      border: "none",
-      cursor: "pointer",
-      transition: "all 0.3s ease",
-    },
-    error: {
-      textAlign: "center",
-      fontSize: isMobile ? "14px" : "16px",
-      color: "#f56565",
-      marginBottom: "15px",
-      animation: "fadeIn 0.5s ease-in-out",
-    },
-    success: {
-      textAlign: "center",
-      fontSize: isMobile ? "14px" : "16px",
-      color: "#28a745",
-      marginBottom: "15px",
-      animation: "fadeIn 0.5s ease-in-out",
-    },
-    loading: {
-      textAlign: "center",
-      fontSize: isMobile ? "16px" : "18px",
-      color: "#4a5568",
-      marginTop: "50px",
-      animation: "fadeIn 0.5s ease-in-out",
-    },
-  };
-
-  // Hover ve active efektleri
-  styles.photoButton[":hover"] = {
-    backgroundColor: "#4c51bf",
-    transform: "translateY(-2px)",
-    boxShadow: "0 4px 12px rgba(90, 103, 216, 0.3)",
-  };
-  styles.photoButton[":active"] = {
-    transform: "translateY(0)",
-    boxShadow: "none",
-  };
-  styles.updateButton[":hover"] = {
-    backgroundColor: "#4c51bf",
-    transform: "translateY(-2px)",
-    boxShadow: "0 4px 12px rgba(90, 103, 216, 0.3)",
-  };
-  styles.updateButton[":active"] = {
-    transform: "translateY(0)",
-    boxShadow: "none",
-  };
-  styles.input[":focus"] = {
-    borderColor: "#5a67d8",
-    boxShadow: "0 0 0 3px rgba(90, 103, 216, 0.1)",
   };
 
   if (!user) {
     return <div style={styles.loading}>Profil yükleniyor...</div>;
+  }
+
+  if (error) {
+    return (
+      <ErrorComponent
+        status={error.status}
+        message={error.message}
+        error={error.errorMessage}
+      />
+    );
   }
 
   const displayImageUrl =
@@ -323,7 +200,6 @@ const MyProfile = () => {
       <h2 style={styles.title}>Profilim</h2>
       <div style={styles.card}>
         {photoLoading && <p style={styles.loading}>Fotoğraf yükleniyor...</p>}
-        {error && <p style={styles.error}>{error}</p>}
         {successMessage && <p style={styles.success}>{successMessage}</p>}
         <form onSubmit={handleUpdate} style={styles.form}>
           <div style={styles.photoContainer}>

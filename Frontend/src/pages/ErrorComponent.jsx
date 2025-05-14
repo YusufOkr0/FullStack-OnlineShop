@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const ErrorComponent = ({ status, message }) => {
+const ErrorComponent = ({ status, message, error }) => {
   const navigate = useNavigate();
 
   // Responsive inline styles (ProductForm ile uyumlu)
@@ -94,10 +94,10 @@ const ErrorComponent = ({ status, message }) => {
   return (
     <div style={styles.container}>
       <div style={styles.errorCard}>
-        <h2 style={styles.title}>Bir Hata Oluştu</h2>
+        <h2 style={styles.title}>{error}</h2>
         {status && <p style={styles.status}>Hata Kodu: {status}</p>}
         <p style={styles.message}>{message || "Bilinmeyen bir hata oluştu."}</p>
-        <button style={styles.button} onClick={() => navigate("/products")}>
+        <button style={styles.button} onClick={() => navigate("/")}>
           Geri Dön
         </button>
       </div>

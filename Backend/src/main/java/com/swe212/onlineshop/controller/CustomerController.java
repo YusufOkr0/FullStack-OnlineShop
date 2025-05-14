@@ -2,10 +2,11 @@ package com.swe212.onlineshop.controller;
 
 import com.swe212.onlineshop.dtos.CustomerDto;
 import com.swe212.onlineshop.dtos.request.UpdateCustomerRequest;
-import com.swe212.onlineshop.dtos.request.UpdateProductRequest;
 import com.swe212.onlineshop.entity.Customer;
 import com.swe212.onlineshop.service.CustomerService;
+import com.swe212.onlineshop.service.ReportService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ import java.util.List;
 public class CustomerController {
 
     private final CustomerService customerService;
+    private final ReportService reportService;
 
     @GetMapping
     public ResponseEntity<List<CustomerDto>> getAllCustomers(){
@@ -63,6 +65,18 @@ public class CustomerController {
                 .ok()
                 .contentType(MediaType.valueOf(customer.getImageType()))
                 .body(customer.getImageBytes());
+    }
+
+
+    @GetMapping("/report")
+    public ResponseEntity<byte[]> getCustomersListAsPdf(){
+
+        byte[] customersListAsPdf = reportService.generateCustomersListAsPdf();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=order_receipt.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(customersListAsPdf);
     }
 
 }
