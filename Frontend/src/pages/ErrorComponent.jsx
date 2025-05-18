@@ -95,10 +95,10 @@ const ErrorComponent = ({ status, message, error }) => {
     <div style={styles.container}>
       <div style={styles.errorCard}>
         <h2 style={styles.title}>{error}</h2>
-        {status && <p style={styles.status}>Hata Kodu: {status}</p>}
-        <p style={styles.message}>{message || "Bilinmeyen bir hata oluştu."}</p>
+        {status && <p style={styles.status}>Error Status Code: {status}</p>}
+        <p style={styles.message}>{message || "Unknown error occurs."}</p>
         <button style={styles.button} onClick={() => navigate("/")}>
-          Geri Dön
+          Go Back
         </button>
       </div>
     </div>

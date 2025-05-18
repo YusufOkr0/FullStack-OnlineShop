@@ -29,17 +29,17 @@ const Home = () => {
     <div style={styles.container}>
       <div style={styles.header}>
         <h1 style={styles.headerH1}>
-          Hoşgeldiniz {user ? user.username : "Ziyaretçi"}!
+          Welcome {user ? user.username : "Visitor"}!
         </h1>
         <p style={styles.headerP}>
           {user
-            ? "Hoş geldiniz, işlemlerinize başlayabilirsiniz."
-            : "Lütfen giriş yapın veya kaydolun."}
+            ? "Welcome, you can start your transactions."
+            : "Please log in or sign up."}
         </p>
       </div>
 
       <div style={styles.content}>
-        <h2 style={styles.contentH2}>Öne Çıkan İçerikler</h2>
+        <h2 style={styles.contentH2}>Featured Content</h2>
         <div style={styles.cards}>
           <div
             style={styles.card}
@@ -53,8 +53,8 @@ const Home = () => {
               })
             }
           >
-            <h3 style={styles.cardH3}>Ürünler</h3>
-            <p style={styles.cardP}>En son eklenen ürünleri keşfedin.</p>
+            <h3 style={styles.cardH3}>Products</h3>
+            <p style={styles.cardP}>Discover the latest products added.</p>
             <Link
               to="/products"
               style={styles.cardLink}
@@ -75,7 +75,7 @@ const Home = () => {
                 Object.assign(e.target.style, { transform: "translateY(-2px)" })
               }
             >
-              Ürünlere Git
+              Go to Products
             </Link>
           </div>
           {user && (
@@ -92,8 +92,8 @@ const Home = () => {
                   })
                 }
               >
-                <h3 style={styles.cardH3}>Siparişler</h3>
-                <p style={styles.cardP}>Geçmiş siparişlerinizi görüntüleyin.</p>
+                <h3 style={styles.cardH3}>Orders</h3>
+                <p style={styles.cardP}>View orders</p>
                 <Link
                   to={user.role === "ADMIN" ? "/orders" : "/myorders"}
                   style={styles.cardLink}
@@ -116,7 +116,7 @@ const Home = () => {
                     })
                   }
                 >
-                  Siparişlere Git
+                  Go Orders
                 </Link>
               </div>
               {user.role === "ADMIN" && (
@@ -132,8 +132,8 @@ const Home = () => {
                     })
                   }
                 >
-                  <h3 style={styles.cardH3}>Yönetim</h3>
-                  <p style={styles.cardP}>Ürünleri ve kullanıcıları yönetin.</p>
+                  <h3 style={styles.cardH3}>Management</h3>
+                  <p style={styles.cardP}>Manage products and users.</p>
                   <Link
                     to="/users"
                     style={styles.cardLink}
@@ -156,7 +156,7 @@ const Home = () => {
                       })
                     }
                   >
-                    Kullanıcılar
+                    Users
                   </Link>
                 </div>
               )}

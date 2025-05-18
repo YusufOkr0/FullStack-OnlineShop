@@ -12,11 +12,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-@Component // Make this a Spring bean
+@Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -29,11 +30,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
+
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String username;
+        final String requestUrl = request.getRequestURI();
+
+        AntPathMatcher pathMatcher = new AntPathMatcher();
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        if (
+                pathMatcher.match("/products/**", requestUrl) ||
+                        pathMatcher.match("/auth/**", requestUrl) ||
+                        pathMatcher.match("/swagger-ui/**", requestUrl)
+        ) {
             filterChain.doFilter(request, response);
             return;
         }

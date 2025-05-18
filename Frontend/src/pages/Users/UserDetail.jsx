@@ -10,7 +10,7 @@ const UserDetail = () => {
   const { id } = useParams();
   const [user, setUser] = useState(null);
   const [currentPhotoUrl, setCurrentPhotoUrl] = useState(
-    "https://via.placeholder.com/150"
+      "https://via.placeholder.com/150"
   );
   const [loading, setLoading] = useState(true);
   const [photoLoading, setPhotoLoading] = useState(false);
@@ -26,8 +26,8 @@ const UserDetail = () => {
         setError({
           status: err.response?.data?.status,
           message:
-            err.response?.data?.message || "Kullanıcı detayları yüklenemedi.",
-          errorMessage: err.response?.data?.error || "Bir Hata Oluştu",
+              err.response?.data?.message || "User details could not be loaded.",
+          errorMessage: err.response?.data?.error || "An Error Occurred",
         });
       }
     };
@@ -72,59 +72,59 @@ const UserDetail = () => {
 
   if (error) {
     return (
-      <ErrorComponent
-        status={error.status}
-        message={error.message}
-        error={error.errorMessage}
-      />
+        <ErrorComponent
+            status={error.status}
+            message={error.message}
+            error={error.errorMessage}
+        />
     );
   }
 
   if (loading) {
-    return <p style={styles.loading}>Yükleniyor...</p>;
+    return <p style={styles.loading}>Loading...</p>;
   }
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>Kullanıcı Detayları</h2>
-      <div style={styles.card}>
-        <div style={styles.photoContainer}>
-          {photoLoading ? (
-            <p style={styles.loading}>Fotoğraf yükleniyor...</p>
-          ) : (
-            <img
-              src={currentPhotoUrl}
-              alt={user?.username || "Profil"}
-              style={styles.photo}
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = "https://via.placeholder.com/150";
-              }}
-            />
-          )}
-        </div>
+      <div style={styles.container}>
+        <h2 style={styles.title}>User Details</h2>
+        <div style={styles.card}>
+          <div style={styles.photoContainer}>
+            {photoLoading ? (
+                <p style={styles.loading}>Photo loading...</p>
+            ) : (
+                <img
+                    src={currentPhotoUrl}
+                    alt={user?.username || "Profile"}
+                    style={styles.photo}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "https://via.placeholder.com/150";
+                    }}
+                />
+            )}
+          </div>
 
-        <div style={styles.detailGroup}>
-          <label style={styles.label}>Kullanıcı Adı:</label>
-          <p style={styles.value}>{user?.username || "Bilinmiyor"}</p>
-        </div>
+          <div style={styles.detailGroup}>
+            <label style={styles.label}>Username:</label>
+            <p style={styles.value}>{user?.username || "Unknown"}</p>
+          </div>
 
-        <div style={styles.detailGroup}>
-          <label style={styles.label}>Adres:</label>
-          <p style={styles.value}>{user?.address || "Bilinmiyor"}</p>
-        </div>
+          <div style={styles.detailGroup}>
+            <label style={styles.label}>Address:</label>
+            <p style={styles.value}>{user?.address || "Unknown"}</p>
+          </div>
 
-        <div style={styles.detailGroup}>
-          <label style={styles.label}>Telefon:</label>
-          <p style={styles.value}>{user?.phone || "Bilinmiyor"}</p>
-        </div>
+          <div style={styles.detailGroup}>
+            <label style={styles.label}>Phone:</label>
+            <p style={styles.value}>{user?.phone || "Unknown"}</p>
+          </div>
 
-        <div style={styles.detailGroup}>
-          <label style={styles.label}>Rol:</label>
-          <p style={styles.value}>{user?.role || "Bilinmiyor"}</p>
+          <div style={styles.detailGroup}>
+            <label style={styles.label}>Role:</label>
+            <p style={styles.value}>{user?.role || "Unknown"}</p>
+          </div>
         </div>
       </div>
-    </div>
   );
 };
 
