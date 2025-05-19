@@ -208,6 +208,23 @@ const Navbar = () => {
               </Link>
             </li>
           )}
+          <li style={styles.li}>
+            <Link
+              to="/about"
+              style={styles.link}
+              onMouseOver={(e) =>
+                Object.assign(e.target.style, styles.linkHover)
+              }
+              onMouseOut={(e) =>
+                Object.assign(e.target.style, {
+                  color: styles.link.color,
+                  backgroundColor: "transparent",
+                })
+              }
+            >
+              About
+            </Link>
+          </li>
         </ul>
         <ul style={styles.right}>
           {!user ? (
