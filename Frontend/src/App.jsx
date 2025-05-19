@@ -21,6 +21,7 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home/Home";
 import OrderList from "./pages/Orders/OrderList";
 import ErrorComponent from "./pages/ErrorComponent";
+import About from "./pages/Home/About";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
           {/* AUTH */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
